@@ -23,4 +23,9 @@ public class GameManager :MonoBehaviour
         selectedAnimalData = animal;
         Debug.Log("Animal selectat: " + animal.animalName);
     }
+
+
+
+
+
 }
