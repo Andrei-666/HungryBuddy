@@ -1,4 +1,0 @@
-repository "Hungry Buddy 2025-04-22_10-52-56/Hungry Buddy@7972462897714@cloud"
-  path "/"
-    br "/main"
-    co "/main"
