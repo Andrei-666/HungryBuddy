@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2810f8021c4e6d54abfd2a22d5e2fe45, type: 3}
   m_Name: PisicaData
   m_EditorClassIdentifier: 
-  animalName: Cat
-  animalIcon: {fileID: 7908985680872243542, guid: a424797241831f24587bab10fb2724e8, type: 3}
+  animalName: Peanut
+  animalIcon: {fileID: 21300000, guid: a424797241831f24587bab10fb2724e8, type: 3}
   startHealth: 100
   startAttack: 10
