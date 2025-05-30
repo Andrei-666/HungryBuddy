@@ -3,8 +3,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New AnimalData", menuName = "Game/Animal Data")]
 public class AnimalData :ScriptableObject
 {
-    public string animalName = "New animal";
+    [Header("Info")]
+    public string animalName = "New Animal";
     public Sprite animalIcon;
-    public int startHealth = 100;
-    public int startAttack = 10;
+
+    [Header("Starting Stats")]
+    public int maxHealth = 100;         
+    public int maxFood = 100;           
+    public int initialLevel = 1;        
+    public int xpToCompleteInitialLevel = 100; 
+
+    [Header("Combat Stats")]
+    public int baseAttack = 10;         
 }

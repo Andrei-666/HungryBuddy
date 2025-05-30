@@ -1,16 +1,38 @@
 ﻿using TMPro;
 using UnityEngine;
-using UnityEngine.UI; 
-
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; } 
 
+
     public GameObject startPanel;
     public GameObject mainMenuPanel;
-    public GameObject mapPanel;
-    public GameObject fightPanel;
+
+
+    [Header("Main Menu Elements - Info")]
+    public Image animalIconImage;
+    public TextMeshProUGUI animalNameText;
+    public TextMeshProUGUI animalLevelText; 
+
+    [Header("Main Menu Elements - Status Bars")] 
+    public Slider healthSlider;             
+    public TextMeshProUGUI healthValueText; 
+    public Slider foodSlider;               
+    public TextMeshProUGUI foodValueText;   
+    public Slider xpSlider;                
+    public TextMeshProUGUI xpValueText;
+
+
+    public AnimalData pisicaData;
+    public AnimalData caineData;
+    public AnimalData papagalData;
+    public AnimalData hamsterData;
+
+
+
 
     void Awake()
     {
@@ -26,47 +48,37 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        ShowStartPanel();
+        InitializeUIPanelsBasedOnGameState();
     }
+    void InitializeUIPanelsBasedOnGameState()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.selectedAnimalData != null)
+        {
+            Debug.Log("UIManager: Animal deja selectat (" + GameManager.Instance.selectedAnimalData.animalName + "). Afisez MainMenuPanel.");
+            ShowMainMenu(); 
+        }
+        else
+        {
+            Debug.Log("UIManager: Niciun animal selectat. Afisez StartPanel.");
+            ShowStartPanel();
+        }
+    }
+
 
     public void ShowStartPanel()
     {
         startPanel.SetActive(true);
         mainMenuPanel.SetActive(false);
-        mapPanel.SetActive(false);
-        fightPanel.SetActive(false);
     }
 
     public void ShowMainMenu()
     {
         startPanel.SetActive(false);
         mainMenuPanel.SetActive(true);
-        mapPanel.SetActive(false);
-        fightPanel.SetActive(false);
 
-         UpdateMainMenuUI();
+        UpdateAllStatusDisplays();
     }
 
-    public void ShowMapPanel()
-    {
-        startPanel.SetActive(false);
-        mainMenuPanel.SetActive(false);
-        mapPanel.SetActive(true);
-        fightPanel.SetActive(false);
-    }
-
-    public void ShowFightPanel()
-    {
-        startPanel.SetActive(false);
-        mainMenuPanel.SetActive(false);
-        mapPanel.SetActive(false);
-        fightPanel.SetActive(true);
-    }
-
-    public AnimalData pisicaData;
-    public AnimalData caineData;
-    public AnimalData papagalData;
-    public AnimalData hamsterData;
 
 
     public void SelectPisica()
@@ -94,37 +106,112 @@ public class UIManager : MonoBehaviour
     }
 
 
-    [Header("Main Menu Elements")]
-    public Image animalIconImage;
-    public TextMeshProUGUI animalNameText;
 
-    public void UpdateMainMenuUI()
+    public void UpdateMainMenuUI() 
     {
-        if (GameManager.Instance.selectedAnimalData != null)
+        if (GameManager.Instance == null || GameManager.Instance.selectedAnimalData == null)
         {
-            Debug.Log("Actualizare UI Main Menu pentru: " + GameManager.Instance.selectedAnimalData.animalName);
-            if (animalNameText != null)
-            {
-                animalNameText.text = GameManager.Instance.selectedAnimalData.animalName;
-                Debug.Log("nume animal: " + animalNameText.text);
-            }
-            else { Debug.LogWarning("Referința animalNameText lipsește!"); }
-
-            if (animalIconImage != null)
-            {
-                animalIconImage.sprite = GameManager.Instance.selectedAnimalData.animalIcon;
-                animalIconImage.enabled = (animalIconImage.sprite != null);
-            }
-            else { Debug.LogWarning("Referința animalIconImage lipsește!"); }
+            Debug.LogWarning("UpdateMainMenuUI: GameManager sau selectedAnimalData lipseste.");
+            if (animalNameText != null) animalNameText.text = "N/A";
+            if (animalIconImage != null) animalIconImage.enabled = false;
+            return;
         }
-        else
+
+        if (animalNameText != null)
         {
-            Debug.LogWarning("Nu există animal selectat pentru a actualiza Main Menu UI.");
+            animalNameText.text = GameManager.Instance.selectedAnimalData.animalName;
+        }
+
+        if (animalIconImage != null)
+        {
+            animalIconImage.sprite = GameManager.Instance.selectedAnimalData.animalIcon;
+            animalIconImage.enabled = (animalIconImage.sprite != null);
         }
     }
 
+    public void UpdateAllStatusDisplays()
+    {
+        if (GameManager.Instance == null || GameManager.Instance.selectedAnimalData == null)
+        {
+            Debug.LogWarning("UIManager (UpdateAll): GameManager sau animalul selectat lipseste. UI-ul nu poate fi actualizat complet.");
+            
+            if (animalNameText != null) animalNameText.text = "N/A";
+            if (animalIconImage != null) animalIconImage.enabled = false;
+            if (animalLevelText != null) animalLevelText.text = "Nivel: -";
+            if (healthSlider != null) { healthSlider.value = 0; healthSlider.maxValue = 1; }
+            if (healthValueText != null) healthValueText.text = "-/-";
+            if (foodSlider != null) { foodSlider.value = 0; foodSlider.maxValue = 1; }
+            if (foodValueText != null) foodValueText.text = "-/-";
+            if (xpSlider != null) { xpSlider.value = 0; xpSlider.maxValue = 1; }
+            if (xpValueText != null) xpValueText.text = "-/-";
+            return;
+        }
 
-    
+        Debug.Log("UIManager: Se actualizeaza toate display-urile de status pentru " + GameManager.Instance.selectedAnimalData.animalName);
+
+        UpdateMainMenuUI();
+
+        if (animalLevelText != null)
+        {
+            animalLevelText.text = "Nivel: " + GameManager.Instance.CurrentLevel;
+        }
+        else { Debug.LogWarning("UIManager: Referinta animalLevelText lipseste!"); }
+
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = GameManager.Instance.MaxHealthValue;
+            healthSlider.value = GameManager.Instance.CurrentHealth;
+            if (healthValueText != null)
+            {
+                healthValueText.text = GameManager.Instance.CurrentHealth + " / " + GameManager.Instance.MaxHealthValue;
+            }
+        }
+        else { Debug.LogWarning("UIManager: Referinta healthSlider lipseste!"); }
+
+        if (foodSlider != null)
+        {
+            foodSlider.maxValue = GameManager.Instance.MaxFoodValue;
+            foodSlider.value = GameManager.Instance.CurrentFood;
+            if (foodValueText != null)
+            {
+                foodValueText.text = GameManager.Instance.CurrentFood + " / " + GameManager.Instance.MaxFoodValue;
+            }
+        }
+        else { Debug.LogWarning("UIManager: Referinta foodSlider lipseste!"); }
+
+        if (xpSlider != null)
+        {
+            if (GameManager.Instance.XpForNextLevel > 0) 
+            {
+                xpSlider.maxValue = GameManager.Instance.XpForNextLevel;
+                xpSlider.value = GameManager.Instance.CurrentXP;
+                if (xpValueText != null)
+                {
+                    xpValueText.text = GameManager.Instance.CurrentXP + " / " + GameManager.Instance.XpForNextLevel;
+                }
+            }
+            else 
+            {
+                xpSlider.maxValue = 1; 
+                xpSlider.value = 1;    
+                if (xpValueText != null)
+                {
+                    xpValueText.text = "MAX";
+                }
+            }
+        }
+        else { Debug.LogWarning("UIManager: Referinta xpSlider lipseste!"); }
+    }
+
+    public void LoadMapScene()
+    {
+        SceneManager.LoadScene("Map");
+    }
+
+
+
+
+
 
 
 }
