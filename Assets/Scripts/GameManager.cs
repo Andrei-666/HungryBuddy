@@ -15,6 +15,11 @@ public class GameManager : MonoBehaviour
     public int MaxFoodValue { get; private set; }
     public int XpForNextLevel { get; private set; }
 
+    [Header("Game Data")]
+    public AnimalData[] allAnimalDatas;
+
+    public int ActiveProfileSlot { get; private set; }
+
     private static readonly int[] xpProgressionForSubsequentLevels = new int[] {
         0,   
         0,  
@@ -25,6 +30,9 @@ public class GameManager : MonoBehaviour
         1200  
         
     };
+
+
+
 
     void Awake()
     {
@@ -64,6 +72,71 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"GameManager: Statistici initializate - Viata: {CurrentHealth}/{MaxHealthValue}, Mancare: {CurrentFood}/{MaxFoodValue}, Nivel: {CurrentLevel}, XP: {CurrentXP}/{XpForNextLevel}");
         NotifyUIOfStatChanges();
+
+        SaveGame();
+
+        NotifyUIOfStatChanges();
+    }
+
+    public void PrepareNewGame(int slotNumber)
+    {
+        ActiveProfileSlot = slotNumber;
+        selectedAnimalData = null;
+        Debug.Log("GameManager: Pregatire pentru un joc nou in slotul " + slotNumber);
+    }
+
+
+    public void SaveGame()
+    {
+        if (ActiveProfileSlot <= 0 || ActiveProfileSlot > 3) { Debug.LogError("SaveGame: Slot de profil invalid: " + ActiveProfileSlot); return; }
+        if (selectedAnimalData == null) { Debug.LogError("SaveGame: Nu se poate salva, niciun animal selectat!"); return; }
+
+        string prefix = "Profile_" + ActiveProfileSlot + "_";
+        PlayerPrefs.SetInt(prefix + "Used", 1);
+        PlayerPrefs.SetString(prefix + "AnimalType", selectedAnimalData.animalName);
+        PlayerPrefs.SetInt(prefix + "Level", CurrentLevel);
+        PlayerPrefs.SetInt(prefix + "XP", CurrentXP);
+        PlayerPrefs.SetInt(prefix + "Health", CurrentHealth);
+        PlayerPrefs.SetInt(prefix + "Food", CurrentFood);
+
+        PlayerPrefs.Save();
+        Debug.Log("Jocul a fost salvat in slotul " + ActiveProfileSlot);
+    }
+
+    public void LoadGame(int slotNumber)
+    {
+        ActiveProfileSlot = slotNumber;
+        string prefix = "Profile_" + slotNumber + "_";
+
+        if (PlayerPrefs.GetInt(prefix + "Used", 0) == 0) { Debug.LogError("LoadGame: Slotul " + slotNumber + " este gol."); return; }
+
+        string animalType = PlayerPrefs.GetString(prefix + "AnimalType");
+        AnimalData dataToLoad = FindAnimalDataByName(animalType);
+        if (dataToLoad == null) { Debug.LogError("LoadGame: Nu s-a gasit AnimalData pentru tipul: " + animalType); return; }
+        selectedAnimalData = dataToLoad;
+
+        MaxHealthValue = selectedAnimalData.maxHealth;
+        MaxFoodValue = selectedAnimalData.maxFood;
+        CurrentLevel = PlayerPrefs.GetInt(prefix + "Level");
+        CurrentXP = PlayerPrefs.GetInt(prefix + "XP");
+        CurrentHealth = PlayerPrefs.GetInt(prefix + "Health");
+        CurrentFood = PlayerPrefs.GetInt(prefix + "Food");
+        XpForNextLevel = CalculateXpNeededForLevel(CurrentLevel);
+
+        Debug.Log("Jocul a fost incarcat din slotul " + slotNumber + " cu animalul " + animalType);
+        NotifyUIOfStatChanges();
+    }
+
+    private AnimalData FindAnimalDataByName(string name)
+    {
+        foreach (AnimalData data in allAnimalDatas)
+        {
+            if (data.animalName == name)
+            {
+                return data;
+            }
+        }
+        return null;
     }
 
     private int CalculateXpNeededForLevel(int completedLevel) 

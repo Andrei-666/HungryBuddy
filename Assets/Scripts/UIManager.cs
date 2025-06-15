@@ -10,7 +10,7 @@ public class UIManager : MonoBehaviour
 
     public GameObject startPanel;
     public GameObject mainMenuPanel;
-
+    public GameObject profileSelectionPanel;
 
     [Header("Main Menu Elements - Info")]
     public Image animalIconImage;
@@ -25,6 +25,9 @@ public class UIManager : MonoBehaviour
     public Slider xpSlider;                
     public TextMeshProUGUI xpValueText;
 
+    [Header("Profile Selection Elements")]
+    public Button[] profileButtons;
+    public TextMeshProUGUI[] profileButtonTexts;
 
     public AnimalData pisicaData;
     public AnimalData caineData;
@@ -48,25 +51,65 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        InitializeUIPanelsBasedOnGameState();
+        ShowProfileSelectionPanel();
     }
-    void InitializeUIPanelsBasedOnGameState()
+
+    public void ShowProfileSelectionPanel()
     {
-        if (GameManager.Instance != null && GameManager.Instance.selectedAnimalData != null)
+        profileSelectionPanel.SetActive(true);
+        startPanel.SetActive(false);
+        mainMenuPanel.SetActive(false);
+        UpdateProfileButtonsUI();
+        UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    public void UpdateProfileButtonsUI()
+    {
+        for (int i = 0; i < profileButtons.Length; i++)
         {
-            Debug.Log("UIManager: Animal deja selectat (" + GameManager.Instance.selectedAnimalData.animalName + "). Afisez MainMenuPanel.");
-            ShowMainMenu(); 
+            if (i < profileButtonTexts.Length && profileButtonTexts[i] != null)
+            {
+                int profileSlot = i + 1;
+                if (PlayerPrefs.GetInt("Profile_" + profileSlot + "_Used", 0) == 1)
+                {
+                    string animalType = PlayerPrefs.GetString("Profile_" + profileSlot + "_AnimalType", "N/A");
+                    int level = PlayerPrefs.GetInt("Profile_" + profileSlot + "_Level", 1);
+                    profileButtonTexts[i].text = $"Load Game {profileSlot}\n{animalType} - Nivel {level}";
+                }
+                else
+                {
+                    profileButtonTexts[i].text = "New Game";
+                }
+            }
+        }
+    }
+
+    public void OnProfileButtonClicked(int slotNumber)
+    {
+        if (GameManager.Instance == null) { Debug.LogError("GameManager nu este gasit!"); return; }
+
+        if (PlayerPrefs.GetInt("Profile_" + slotNumber + "_Used", 0) == 1)
+        {
+            GameManager.Instance.LoadGame(slotNumber);
+            ShowMainMenu();
         }
         else
         {
-            Debug.Log("UIManager: Niciun animal selectat. Afisez StartPanel.");
+            GameManager.Instance.PrepareNewGame(slotNumber);
             ShowStartPanel();
         }
     }
 
+    public void OnResetAllProfilesClicked()
+    {
+        PlayerPrefs.DeleteAll();
+        UpdateProfileButtonsUI();
+        Debug.LogWarning("Toate datele de profil au fost STERSE!");
+    }
 
     public void ShowStartPanel()
     {
+        profileSelectionPanel.SetActive(false);
         startPanel.SetActive(true);
         mainMenuPanel.SetActive(false);
     }
@@ -75,7 +118,7 @@ public class UIManager : MonoBehaviour
     {
         startPanel.SetActive(false);
         mainMenuPanel.SetActive(true);
-
+        profileSelectionPanel.SetActive(false);
         UpdateAllStatusDisplays();
     }
 
