@@ -10,6 +10,8 @@ public class MapUIManager : MonoBehaviour
     {
         SceneManager.LoadScene("AnimalSelection");
     }
+
+    
 }
 
     
