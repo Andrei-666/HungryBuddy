@@ -5,7 +5,6 @@ using TMPro;
 using UnityEngine.UI;
 using System;
 using UnityEngine.Networking;
-using System.Text; // For StringBuilder
 
 public class LocationStuff : MonoBehaviour
 {
@@ -29,12 +28,6 @@ public class LocationStuff : MonoBehaviour
     public string googleMapsApiKey = "AIzaSyDj41OK_EDVYC8EUyhsRyM1TqjAfXEkGNw";
 
     private string lastMapUrl = "";
-
-    // === Food marker data ===
-    public int foodCount = 5;
-    public List<GPSLoc> foodLocations = new List<GPSLoc>();
-    public float foodSpawnRadius = 0.001f; // ~100m
-    public float foodConsumeDistance = 0.00012f; // ~12m
 
     IEnumerator Start()
     {
@@ -87,10 +80,6 @@ public class LocationStuff : MonoBehaviour
             // Fetch and display map the first time
             currLoc.lat = (float)Input.location.lastData.latitude;
             currLoc.lon = (float)Input.location.lastData.longitude;
-
-            // Spawn food items near player on first location fetch
-            SpawnFood(currLoc.lat, currLoc.lon);
-
             StartCoroutine(UpdateMapImage(currLoc.lat, currLoc.lon));
         }
     }
@@ -112,11 +101,8 @@ public class LocationStuff : MonoBehaviour
                 debugTxt.text += "\nDistance: " + distanceBetween + " km";
             }
 
-            // Food consumption check
-            CheckForFoodConsumption(currLoc.lat, currLoc.lon);
-
             // Optionally, update map only if location changes significantly to avoid excessive requests
-            if (mapImage != null)
+            /*if (mapImage != null)
             {
                 string newMapUrl = BuildMapUrl(currLoc.lat, currLoc.lon);
                 if (newMapUrl != lastMapUrl)
@@ -124,7 +110,7 @@ public class LocationStuff : MonoBehaviour
                     lastMapUrl = newMapUrl;
                     StartCoroutine(UpdateMapImage(currLoc.lat, currLoc.lon));
                 }
-            }
+            }*/
         }
     }
 
@@ -137,40 +123,6 @@ public class LocationStuff : MonoBehaviour
     {
         startLoc = new GPSLoc(currLoc.lon, currLoc.lat);
         measureDistance = true;
-    }
-
-    //================== FOOD LOGIC ==================
-
-    // Call this to randomly place foodCount food items near lat/lon
-    public void SpawnFood(float centerLat, float centerLon)
-    {
-        foodLocations.Clear();
-        for (int i = 0; i < foodCount; i++)
-        {
-            float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
-            float radius = UnityEngine.Random.Range(0f, foodSpawnRadius);
-            float lat = centerLat + Mathf.Cos(angle) * radius;
-            float lon = centerLon + Mathf.Sin(angle) * radius;
-            foodLocations.Add(new GPSLoc(lon, lat));
-        }
-    }
-
-    // Checks if player is close enough to any food to consume it
-    public void CheckForFoodConsumption(float playerLat, float playerLon)
-    {
-        for (int i = foodLocations.Count - 1; i >= 0; i--)
-        {
-            var food = foodLocations[i];
-            double dist = distance(playerLat, playerLon, food.lat, food.lon, 'K') * 1000.0; // in meters
-            if (dist < foodConsumeDistance * 100000.0) // foodConsumeDistance is in degrees, so scale
-            {
-                foodLocations.RemoveAt(i);
-                debugTxt.text += $"\nAte food at {food.lat}, {food.lon}!";
-                // Optionally, add score or respawn food
-                SpawnFood(playerLat, playerLon); // respawn all food near current position
-                break; // only eat one per update
-            }
-        }
     }
 
     //https://www.geodatasource.com/resources/tutorials/how-to-calculate-the-distance-between-2-locations-using-c/
@@ -205,17 +157,9 @@ public class LocationStuff : MonoBehaviour
     // ==================== GOOGLE MAPS STATIC API FUNCTIONALITY ========================
     private string BuildMapUrl(double lat, double lon)
     {
-        var sb = new StringBuilder();
-        sb.Append($"https://maps.googleapis.com/maps/api/staticmap?center={lat},{lon}&zoom={mapZoom}&size={mapWidth}x{mapHeight}&maptype=roadmap");
-        // Add player marker
-        sb.Append($"&markers=color:red%7Clabel:P%7C{lat},{lon}");
-        // Add food markers (label F, yellow)
-        foreach (var food in foodLocations)
-        {
-            sb.Append($"&markers=color:yellow%7Clabel:F%7C{food.lat},{food.lon}");
-        }
-        sb.Append($"&key={googleMapsApiKey}");
-        return sb.ToString();
+        // Documentation: https://developers.google.com/maps/documentation/maps-static/overview
+        string url = $"https://maps.googleapis.com/maps/api/staticmap?center={lat},{lon}&zoom={mapZoom}&size={mapWidth}x{mapHeight}&maptype=roadmap&markers=color:red%7C{lat},{lon}&key={googleMapsApiKey}";
+        return url;
     }
 
     private IEnumerator UpdateMapImage(double lat, double lon)

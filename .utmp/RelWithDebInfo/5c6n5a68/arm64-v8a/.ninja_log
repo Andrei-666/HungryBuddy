@@ -1,0 +1,23 @@
+# ninja log v5
+1	3585	7717860446083184	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	8c125f1e12913a36
+100	799	7717860418198482	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	ca5105f5a876ee51
+803	1178	7717860421982716	C:/Users/adeha/Desktop/HungryBuddy/HungryBuddy/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5c6n5a68/obj/arm64-v8a/libswappywrapper.so	93d8b428fd65bad
+16	3135	7717860441597841	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	45dd86e1def8621d
+88	3037	7717860440624665	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	d51b2342f7e1c02
+38	2965	7717860439860111	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	13ae8b88875e449b
+63	2977	7717860439992859	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	7f6a8b4cfd8627e3
+76	3401	7717860444234455	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	e5aff19d9b3154d8
+28	3015	7717860440384767	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	684590a5c8b3c3d6
+50	3485	7717860445092727	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	7e9f08e21fc81372
+3586	3731	7717860447627285	C:/Users/adeha/Desktop/HungryBuddy/HungryBuddy/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5c6n5a68/obj/arm64-v8a/libgame.so	19d0e2307f283ac7
+301	851	7717872049276218	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	ca5105f5a876ee51
+852	1086	7717872051583420	C:/Users/adeha/Desktop/HungryBuddy/HungryBuddy/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5c6n5a68/obj/arm64-v8a/libswappywrapper.so	93d8b428fd65bad
+169	2653	7717872067238716	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	13ae8b88875e449b
+59	2712	7717872067841080	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	7f6a8b4cfd8627e3
+116	2739	7717872068053420	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	684590a5c8b3c3d6
+202	2805	7717872068753330	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	d51b2342f7e1c02
+30	2861	7717872069306893	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	45dd86e1def8621d
+253	2967	7717872070408654	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	e5aff19d9b3154d8
+141	3250	7717872073206640	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	7e9f08e21fc81372
+92	3354	7717872074296677	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	8c125f1e12913a36
+3354	3494	7717872075761351	C:/Users/adeha/Desktop/HungryBuddy/HungryBuddy/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5c6n5a68/obj/arm64-v8a/libgame.so	19d0e2307f283ac7
